@@ -4,7 +4,7 @@
 
 ### By: Kalen Luciano: [GitHub](https://github.com/kalenluciano) | [LinkedIn](https://www.linkedin.com/in/kalenluciano/)
 
-#### [BeeKnees Frontend](https://github.com/kalenluciano/beesknees-frontend)
+#### [BeeKnees Frontend](https://github.com/kalenluciano/bees-knees-frontend)
 
 #### [Deployed Site]()
 
@@ -18,12 +18,12 @@ This app allows users to post content, follow other users, and interact with oth
 
 ### **_Getting Started_**
 
-- `Fork` and `clone`
-- `cd` into the directory
-- Run `sequelize db:create`
-- Run `sequelize db:migrate`
-- Run `sequelize db:seed:all`
-- Run `npm run dev`
+-   `Fork` and `clone`
+-   `cd` into the directory
+-   Run `sequelize db:create`
+-   Run `sequelize db:migrate`
+-   Run `sequelize db:seed:all`
+-   Run `npm run dev`
 
 A Trello board was used to keep track of development progress and can be viewed [here](https://trello.com/b/2omo5oFi/beesknees).
 
@@ -31,15 +31,15 @@ A Trello board was used to keep track of development progress and can be viewed 
 
 ### **_Technologies_**
 
-- PostgreSQL
-- Sequelize
-- Express.js
-- Node.js
-- JavaScript
+-   PostgreSQL
+-   Sequelize
+-   Express.js
+-   Node.js
+-   JavaScript
 
 **_Entity Relationship Diagram:_**
 
-## ![Entity Relationship Diagram](./beesknees-ERD.drawio.png)
+## ![Entity Relationship Diagram](./assets/bees-knees-ERD.drawio.png)
 
 ---
 
@@ -53,7 +53,7 @@ A Trello board was used to keep track of development progress and can be viewed 
 
 ### **_Future Updates_**
 
-- [ ] TBD
+-   [ ] TBD
 
 ---
 
