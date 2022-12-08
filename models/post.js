@@ -8,7 +8,39 @@ module.exports = (sequelize, DataTypes) => {
 		 * The `models/index` file will call this method automatically.
 		 */
 		static associate(models) {
-			// define association here
+			Post.belongsTo(models.User, {
+				foreignKey: 'userId'
+			});
+
+			Post.belongsToMany(models.User, {
+				as: 'user_reactions',
+				through: models.PostReactions,
+				foreignKey: 'postId'
+			});
+
+			Post.belongsToMany(models.Post, {
+				as: 'reposts',
+				through: models.PostRepost,
+				foreignKey: 'postId'
+			});
+
+			Post.belongsToMany(models.Post, {
+				as: 'repost_parent',
+				through: models.PostRepost,
+				foreignKey: 'repostId'
+			});
+
+			Post.belongsToMany(models.Post, {
+				as: 'comments',
+				through: models.PostComment,
+				foreignKey: 'postId'
+			});
+
+			Post.belongsToMany(models.Post, {
+				as: 'comment_parent',
+				through: models.PostComment,
+				foreignKey: 'commentId'
+			});
 		}
 	}
 	Post.init(
