@@ -4,6 +4,14 @@ const middleware = require('../middleware');
 
 Router.get('/', controller.GetAllUsers);
 Router.get('/:id', controller.GetUserDetailsById);
+Router.post(
+	'/:userId/followed-user/:followedId',
+	middleware.stripToken,
+	middleware.verifyToken,
+	controller.AddToFollowingCount,
+	controller.AddToFollowerCount,
+	controller.FollowAUser
+);
 Router.put(
 	'/:id',
 	middleware.stripToken,
