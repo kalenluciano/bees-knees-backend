@@ -19,6 +19,13 @@ const GetUserDetailsById = async (req, res) => {
 	}
 };
 
+const FollowAUser = async (req, res) => {
+	try {
+	} catch (error) {
+		throw error;
+	}
+};
+
 const UpdateUserById = async (req, res) => {
 	try {
 		const userId = parseInt(req.params.id);
