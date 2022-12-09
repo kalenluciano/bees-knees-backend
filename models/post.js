@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
 
 			Post.belongsToMany(models.User, {
 				as: 'user_reactions',
-				through: models.PostReactions,
+				through: models.PostReaction,
 				foreignKey: 'postId'
 			});
 
