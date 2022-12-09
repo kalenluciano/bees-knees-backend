@@ -14,6 +14,8 @@ module.exports = {
 			coverPhoto: falso.randImg(),
 			bio: falso.randText(),
 			dateOfBirth: falso.randPastDate({ years: 100 }),
+			followerCount: falso.randNumber({ min: 0, max: 100 }),
+			followingCount: falso.randNumber({ min: 0, max: 100 }),
 			createdAt: new Date(),
 			updatedAt: new Date()
 		}));

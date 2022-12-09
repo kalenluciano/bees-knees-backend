@@ -44,6 +44,12 @@ module.exports = {
 			dateOfBirth: {
 				type: Sequelize.DATE
 			},
+			followerCount: {
+				type: Sequelize.INTEGER
+			},
+			followingCount: {
+				type: Sequelize.INTEGER
+			},
 			createdAt: {
 				allowNull: false,
 				type: Sequelize.DATE

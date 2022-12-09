@@ -60,7 +60,9 @@ module.exports = (sequelize, DataTypes) => {
 			profilePic: DataTypes.TEXT,
 			coverPhoto: DataTypes.TEXT,
 			bio: DataTypes.TEXT,
-			dateOfBirth: DataTypes.DATE
+			dateOfBirth: DataTypes.DATE,
+			followerCount: DataTypes.INTEGER,
+			followingCount: DataTypes.INTEGER
 		},
 		{
 			sequelize,
