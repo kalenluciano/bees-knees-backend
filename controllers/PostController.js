@@ -1,4 +1,4 @@
-const { Post, PostReaction } = require('../models');
+const { Follow, Post, PostReaction } = require('../models');
 
 const GetAllPosts = async (req, res, next) => {
 	try {
@@ -23,6 +23,29 @@ const GetPostsByUserId = async (req, res, next) => {
 		});
 		res.locals.userId = userId;
 		res.locals.posts = postsByUserId;
+		next();
+	} catch (error) {
+		throw error;
+	}
+};
+
+const GetUserFollowingPosts = async (req, res, next) => {
+	try {
+		const userId = parseInt(req.params.id);
+		const allPosts = await Post.findAll({
+			raw: true
+		});
+		const userFollowing = await Follow.findAll({
+			where: { followerId: userId }
+		});
+		const userFollowingPosts = allPosts.filter((post) => {
+			const postFilteredByUserFollowing = userFollowing.filter((user) => {
+				return user.userId === post.userId;
+			});
+			return postFilteredByUserFollowing.length > 0;
+		});
+		res.locals.userId = userId;
+		res.locals.posts = userFollowingPosts;
 		next();
 	} catch (error) {
 		throw error;
@@ -80,6 +103,60 @@ const AddUserReactionsAndReposts = async (req, res) => {
 	}
 };
 
+const GetPostDetailsById = async (req, res, next) => {
+	try {
+		const userId = parseInt(req.params.userId);
+		const postId = parseInt(req.params.postId);
+		const postDetails = await Post.findOne({
+			where: { id: postId },
+			include: [
+				{ model: Post, as: 'comments', through: { attributes: [] } }
+			]
+		});
+		const getPostDetails = async (post) => {
+			const postDetails = await Post.findOne({
+				where: { id: post.id },
+				include: [
+					{
+						model: Post,
+						as: 'comments',
+						through: { attributes: [] }
+					}
+				]
+			});
+			return postDetails;
+		};
+		const getAllComments = async (post) => {
+			const postDetails = await getPostDetails(post);
+			if (postDetails.comments.length === 0) {
+				return postDetails;
+			} else {
+				return {
+					post,
+					comments: await Promise.all(
+						postDetails.comments.map(
+							async (comment) => await getAllComments(comment)
+						)
+					)
+				};
+			}
+		};
+		const posts = {
+			postDetails,
+			comments: await Promise.all(
+				postDetails.comments.map(
+					async (comment) => await getAllComments(comment)
+				)
+			)
+		};
+		res.locals.userId = userId;
+		res.locals.posts = posts;
+		next();
+	} catch (error) {
+		throw error;
+	}
+};
+
 const PostAPost = async (req, res) => {
 	try {
 		const post = await Post.create(req.body);
@@ -92,6 +169,8 @@ const PostAPost = async (req, res) => {
 module.exports = {
 	GetAllPosts,
 	GetPostsByUserId,
+	GetUserFollowingPosts,
+	GetPostDetailsById,
 	AddUserReactionsAndReposts,
 	PostAPost
 };

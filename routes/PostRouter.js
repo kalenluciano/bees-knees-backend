@@ -12,6 +12,12 @@ Router.get(
 	controller.GetPostsByUserId,
 	controller.AddUserReactionsAndReposts
 );
+Router.get(
+	'/followed-users/user/:id',
+	controller.GetUserFollowingPosts,
+	controller.AddUserReactionsAndReposts
+);
+Router.get('/:postId/user/:userId', controller.GetPostDetailsById);
 Router.post(
 	'/',
 	middleware.stripToken,
