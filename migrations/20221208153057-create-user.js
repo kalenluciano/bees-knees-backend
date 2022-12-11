@@ -45,10 +45,12 @@ module.exports = {
 				type: Sequelize.DATE
 			},
 			followerCount: {
-				type: Sequelize.INTEGER
+				type: Sequelize.INTEGER,
+				defaultValue: 0
 			},
 			followingCount: {
-				type: Sequelize.INTEGER
+				type: Sequelize.INTEGER,
+				defaultValue: 0
 			},
 			createdAt: {
 				allowNull: false,

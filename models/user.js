@@ -61,8 +61,14 @@ module.exports = (sequelize, DataTypes) => {
 			coverPhoto: DataTypes.TEXT,
 			bio: DataTypes.TEXT,
 			dateOfBirth: DataTypes.DATE,
-			followerCount: DataTypes.INTEGER,
-			followingCount: DataTypes.INTEGER
+			followerCount: {
+				type: DataTypes.INTEGER,
+				defaultValue: 0
+			},
+			followingCount: {
+				type: DataTypes.INTEGER,
+				defaultValue: 0
+			}
 		},
 		{
 			sequelize,
