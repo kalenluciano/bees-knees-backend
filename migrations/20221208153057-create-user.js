@@ -22,15 +22,16 @@ module.exports = {
 				allowNull: false
 			},
 			email: {
-				type: Sequelize.STRING
-			},
-			passwordDigest: {
 				type: Sequelize.STRING,
 				allowNull: false,
 				unique: true,
 				validate: {
 					isEmail: true
 				}
+			},
+			passwordDigest: {
+				type: Sequelize.STRING,
+				allowNull: false
 			},
 			profilePic: {
 				type: Sequelize.TEXT
