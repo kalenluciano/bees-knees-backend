@@ -1,4 +1,10 @@
-const { Follow, Post, PostReaction } = require('../models');
+const {
+	Follow,
+	Post,
+	PostReaction,
+	PostComment,
+	PostRepost
+} = require('../models');
 
 const GetAllPosts = async (req, res, next) => {
 	try {
@@ -132,7 +138,7 @@ const GetPostDetailsById = async (req, res, next) => {
 				return postDetails;
 			} else {
 				return {
-					post,
+					...post.dataValues,
 					comments: await Promise.all(
 						postDetails.comments.map(
 							async (comment) => await getAllComments(comment)
@@ -142,7 +148,7 @@ const GetPostDetailsById = async (req, res, next) => {
 			}
 		};
 		const posts = {
-			postDetails,
+			...postDetails.dataValues,
 			comments: await Promise.all(
 				postDetails.comments.map(
 					async (comment) => await getAllComments(comment)
@@ -152,6 +158,116 @@ const GetPostDetailsById = async (req, res, next) => {
 		res.locals.userId = userId;
 		res.locals.posts = posts;
 		next();
+	} catch (error) {
+		throw error;
+	}
+};
+
+const RecursivelyAddUserReactionsAndReposts = async (req, res) => {
+	try {
+		const userId = res.locals.userId;
+		const posts = res.locals.posts;
+		const postReactions = await PostReaction.findAll({
+			where: { userId },
+			raw: true
+		});
+		const postReposts = await Post.findAll({
+			include: [
+				{
+					model: Post,
+					as: 'reposts',
+					through: { attributes: [] }
+				}
+			]
+		});
+		const addUserReactionsAndRepostToPosts = (post) => {
+			const userReactionToPost = postReactions.filter((postReaction) => {
+				return post.id === postReaction.postId;
+			});
+			const postAndUserReactions = {
+				...post,
+				reactionId: userReactionToPost[0]?.reactionId
+			};
+			const repostsOfPost = postReposts.filter((postRepost) => {
+				return postAndUserReactions.id === postRepost.id;
+			});
+			if (repostsOfPost[0].reposts) {
+				const userRepostOfPost = repostsOfPost[0].reposts.filter(
+					(repost) => {
+						return repost.userId === userId;
+					}
+				);
+				const postsAndUserReactionsAndReposts = {
+					...postAndUserReactions,
+					userReposted: userRepostOfPost[0] ? true : false
+				};
+				return postsAndUserReactionsAndReposts;
+			}
+			return postAndUserReactions;
+		};
+		const recursivelyAddUserReactionsAndReposts = (post) => {
+			if (post.comments.length === 0) {
+				return addUserReactionsAndRepostToPosts(
+					post.dataValues ? post.dataValues : post
+				);
+			} else {
+				return {
+					...post,
+					comments: post.comments.map((comment) =>
+						recursivelyAddUserReactionsAndReposts(
+							addUserReactionsAndRepostToPosts(
+								comment.dataValues
+									? comment.dataValues
+									: comment
+							)
+						)
+					)
+				};
+			}
+		};
+		res.send(
+			recursivelyAddUserReactionsAndReposts(
+				addUserReactionsAndRepostToPosts(posts)
+			)
+		);
+	} catch (error) {
+		throw error;
+	}
+};
+
+const PostAReaction = async (req, res) => {
+	try {
+		const postId = parseInt(req.params.postId);
+		const reaction = await PostReaction.create({ ...req.body, postId });
+		res.send(reaction);
+	} catch (error) {
+		throw error;
+	}
+};
+
+const PostAComment = async (req, res) => {
+	try {
+		const postId = parseInt(req.params.postId);
+		const comment = await Post.create(req.body);
+		const commentRelationship = await PostComment.create({
+			postId,
+			commentId: comment.id
+		});
+		res.send({ comment, commentRelationship });
+	} catch (error) {
+		throw error;
+	}
+};
+
+const PostARepost = async (req, res) => {
+	try {
+		const postId = parseInt(req.params.postId);
+		const repost = await Post.create(req.body);
+		const repostRelationship = await PostRepost.create({
+			postId,
+			repostId: repost.id
+		});
+		res.send({ repost, repostRelationship });
 	} catch (error) {
 		throw error;
 	}
@@ -172,5 +288,9 @@ module.exports = {
 	GetUserFollowingPosts,
 	GetPostDetailsById,
 	AddUserReactionsAndReposts,
+	RecursivelyAddUserReactionsAndReposts,
+	PostAReaction,
+	PostAComment,
+	PostARepost,
 	PostAPost
 };
