@@ -5,9 +5,9 @@ const { Post } = require('../models');
 module.exports = {
 	async up(queryInterface, Sequelize) {
 		const posts = await Post.findAll({ raw: true });
-		const comments = [...Array(100)].map(() => ({
-			postId: posts[Math.floor(Math.random() * posts.length)].id,
-			commentId: posts[Math.floor(Math.random() * posts.length)].id,
+		const comments = [...Array(90)].map((number, index) => ({
+			postId: posts[index + 2].id,
+			commentId: posts[index + 1].id,
 			createdAt: new Date(),
 			updatedAt: new Date()
 		}));
