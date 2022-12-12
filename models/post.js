@@ -9,7 +9,8 @@ module.exports = (sequelize, DataTypes) => {
 		 */
 		static associate(models) {
 			Post.belongsTo(models.User, {
-				foreignKey: 'userId'
+				foreignKey: 'userId',
+				as: 'user'
 			});
 
 			Post.belongsToMany(models.User, {

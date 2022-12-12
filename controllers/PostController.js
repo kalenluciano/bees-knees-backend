@@ -3,7 +3,8 @@ const {
 	Post,
 	PostReaction,
 	PostComment,
-	PostRepost
+	PostRepost,
+	User
 } = require('../models');
 
 const GetAllPosts = async (req, res, next) => {
@@ -103,7 +104,15 @@ const AddUserReactionsAndReposts = async (req, res) => {
 				return post;
 			}
 		);
-		res.send(postsAndUserReactionsAndReposts);
+		const allUsers = await User.findAll({});
+		const postsUserDetailsAndUserReactionsAndReposts =
+			postsAndUserReactionsAndReposts.map((post) => {
+				const user = allUsers.filter((user) => {
+					return user.id === post.userId;
+				});
+				return { ...post, username: user[0].username };
+			});
+		res.send(postsUserDetailsAndUserReactionsAndReposts);
 	} catch (error) {
 		throw error;
 	}
