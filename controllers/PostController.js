@@ -292,6 +292,22 @@ const PostAPost = async (req, res) => {
 	}
 };
 
+const DeleteReaction = async (req, res) => {
+	try {
+		const postId = parseInt(req.params.postId);
+		const { userId } = req.body;
+		const reaction = await PostReaction.destory({
+			where: { postId, userId }
+		});
+		return res.status(200).send({
+			msg: `User with id ${reaction.userId} removed reaction to post with id ${reaction.postId}.`,
+			payload: reaction
+		});
+	} catch (error) {
+		throw error;
+	}
+};
+
 module.exports = {
 	GetAllPosts,
 	GetPostsByUserId,
@@ -302,5 +318,6 @@ module.exports = {
 	PostAReaction,
 	PostAComment,
 	PostARepost,
-	PostAPost
+	PostAPost,
+	DeleteReaction
 };

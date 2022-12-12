@@ -46,5 +46,11 @@ Router.post(
 	middleware.verifyToken,
 	controller.PostAReaction
 );
+Router.delete(
+	'/reaction/:postId',
+	middleware.stripToken,
+	middleware.verifyToken,
+	controller.DeleteReaction
+);
 
 module.exports = Router;
