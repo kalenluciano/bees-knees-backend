@@ -299,7 +299,7 @@ const PostAPost = async (req, res) => {
 const DeleteReaction = async (req, res) => {
 	try {
 		const postId = parseInt(req.params.postId);
-		const { userId } = req.body;
+		const userId = parseInt(req.params.userId);
 		const reaction = await PostReaction.destroy({
 			where: { postId, userId }
 		});

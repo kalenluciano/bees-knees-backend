@@ -47,7 +47,7 @@ Router.post(
 	controller.PostAReaction
 );
 Router.delete(
-	'/reaction/:postId',
+	'/reaction/:postId/user/:userId',
 	middleware.stripToken,
 	middleware.verifyToken,
 	controller.DeleteReaction
