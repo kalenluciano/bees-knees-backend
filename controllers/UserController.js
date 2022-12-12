@@ -57,14 +57,14 @@ const AddToFollowerCount = async (req, res, next) => {
 
 const FollowAUser = async (req, res) => {
 	try {
-		const userId = parseInt(req.params.userId);
+		const user_id = parseInt(req.params.userId);
 		const followedId = parseInt(req.params.followedId);
 		const newFollow = await Follow.create({
-			userId,
-			followerId: followedId
+			userId: followedId,
+			followerId: user_id
 		});
 		return res.status(200).send({
-			msg: `User with ${userId} id followed user with ${followedId}`,
+			msg: `User with ${user_id} id followed user with ${followedId}`,
 			payload: newFollow
 		});
 	} catch (error) {
