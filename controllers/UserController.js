@@ -32,7 +32,7 @@ const CheckFollowStatus = async (req, res) => {
 	}
 };
 
-const AddToFollowingCount = async (req, res, next) => {
+const ChangeFollowingCount = async (req, res, next) => {
 	try {
 		const userId = parseInt(req.params.userId);
 		const user = await User.findByPk(userId);
@@ -61,7 +61,7 @@ const AddToFollowingCount = async (req, res, next) => {
 	}
 };
 
-const AddToFollowerCount = async (req, res, next) => {
+const ChangeFollowerCount = async (req, res, next) => {
 	try {
 		const followedId = parseInt(req.params.followedId);
 		const followedUser = await User.findByPk(followedId);
@@ -90,7 +90,7 @@ const AddToFollowerCount = async (req, res, next) => {
 	}
 };
 
-const FollowAUser = async (req, res) => {
+const ChangeFollowUserStatus = async (req, res) => {
 	try {
 		const user_id = parseInt(req.params.userId);
 		const followedId = parseInt(req.params.followedId);
@@ -154,9 +154,9 @@ module.exports = {
 	GetAllUsers,
 	GetUserDetailsById,
 	CheckFollowStatus,
-	AddToFollowingCount,
-	AddToFollowerCount,
-	FollowAUser,
+	ChangeFollowingCount,
+	ChangeFollowerCount,
+	ChangeFollowUserStatus,
 	UpdateUserById,
 	DeleteUserById
 };

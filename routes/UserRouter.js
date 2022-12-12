@@ -9,9 +9,9 @@ Router.post(
 	'/:userId/followed-user/:followedId',
 	middleware.stripToken,
 	middleware.verifyToken,
-	controller.AddToFollowingCount,
-	controller.AddToFollowerCount,
-	controller.FollowAUser
+	controller.ChangeFollowingCount,
+	controller.ChangeFollowerCount,
+	controller.ChangeFollowUserStatus
 );
 Router.put(
 	'/:id',
