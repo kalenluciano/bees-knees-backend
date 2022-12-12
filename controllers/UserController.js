@@ -19,18 +19,42 @@ const GetUserDetailsById = async (req, res) => {
 	}
 };
 
+const CheckFollowStatus = async (req, res) => {
+	try {
+		const user_id = parseInt(req.params.userId);
+		const followedId = parseInt(req.params.followedId);
+		const followStatus = await Follow.findAll({
+			where: { userId: followedId, followerId: user_id }
+		});
+		res.send(followStatus);
+	} catch (error) {
+		throw error;
+	}
+};
+
 const AddToFollowingCount = async (req, res, next) => {
 	try {
 		const userId = parseInt(req.params.userId);
 		const user = await User.findByPk(userId);
-		const newFollowingCount = parseInt(user.followingCount) + 1;
-		const updatedUser = await User.update(
-			{ ...user, followingCount: newFollowingCount },
-			{
-				where: { id: userId },
-				raw: true
-			}
-		);
+		if (req.body.followingUser) {
+			const newFollowingCount = parseInt(user.followingCount) - 1;
+			const updatedUser = await User.update(
+				{ ...user, followingCount: newFollowingCount },
+				{
+					where: { id: userId },
+					raw: true
+				}
+			);
+		} else {
+			const newFollowingCount = parseInt(user.followingCount) + 1;
+			const updatedUser = await User.update(
+				{ ...user, followingCount: newFollowingCount },
+				{
+					where: { id: userId },
+					raw: true
+				}
+			);
+		}
 		next();
 	} catch (error) {
 		throw error;
@@ -41,14 +65,25 @@ const AddToFollowerCount = async (req, res, next) => {
 	try {
 		const followedId = parseInt(req.params.followedId);
 		const followedUser = await User.findByPk(followedId);
-		const newFollowerCount = parseInt(followedUser.followerCount) + 1;
-		const updatedUser = await User.update(
-			{ ...followedUser, followerCount: newFollowerCount },
-			{
-				where: { id: followedId },
-				raw: true
-			}
-		);
+		if (req.body.followingUser) {
+			const newFollowerCount = parseInt(followedUser.followerCount) - 1;
+			const updatedUser = await User.update(
+				{ ...followedUser, followerCount: newFollowerCount },
+				{
+					where: { id: followedId },
+					raw: true
+				}
+			);
+		} else {
+			const newFollowerCount = parseInt(followedUser.followerCount) + 1;
+			const updatedUser = await User.update(
+				{ ...followedUser, followerCount: newFollowerCount },
+				{
+					where: { id: followedId },
+					raw: true
+				}
+			);
+		}
 		next();
 	} catch (error) {
 		throw error;
@@ -59,14 +94,24 @@ const FollowAUser = async (req, res) => {
 	try {
 		const user_id = parseInt(req.params.userId);
 		const followedId = parseInt(req.params.followedId);
-		const newFollow = await Follow.create({
-			userId: followedId,
-			followerId: user_id
-		});
-		return res.status(200).send({
-			msg: `User with ${user_id} id followed user with ${followedId}`,
-			payload: newFollow
-		});
+		if (req.body.followingUser) {
+			const deleteFollow = await Follow.destroy({
+				where: { userId: followedId, followerId: user_id }
+			});
+			return res.status(200).send({
+				msg: `User with ${user_id} id unfollowed user with ${followedId}`,
+				payload: deleteFollow
+			});
+		} else {
+			const newFollow = await Follow.create({
+				userId: followedId,
+				followerId: user_id
+			});
+			return res.status(200).send({
+				msg: `User with ${user_id} id followed user with ${followedId}`,
+				payload: newFollow
+			});
+		}
 	} catch (error) {
 		throw error;
 	}
@@ -108,6 +153,7 @@ const DeleteUserById = async (req, res) => {
 module.exports = {
 	GetAllUsers,
 	GetUserDetailsById,
+	CheckFollowStatus,
 	AddToFollowingCount,
 	AddToFollowerCount,
 	FollowAUser,

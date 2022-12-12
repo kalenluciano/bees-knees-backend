@@ -4,6 +4,7 @@ const middleware = require('../middleware');
 
 Router.get('/', controller.GetAllUsers);
 Router.get('/:id', controller.GetUserDetailsById);
+Router.get('/:userId/followed-user/:followedId', controller.CheckFollowStatus);
 Router.post(
 	'/:userId/followed-user/:followedId',
 	middleware.stripToken,
