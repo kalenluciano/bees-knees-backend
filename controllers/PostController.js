@@ -45,6 +45,7 @@ const GetUserFollowingPosts = async (req, res, next) => {
 		const userFollowing = await Follow.findAll({
 			where: { followerId: userId }
 		});
+		userFollowing.push({ userId });
 		const userFollowingPosts = allPosts.filter((post) => {
 			const postFilteredByUserFollowing = userFollowing.filter((user) => {
 				return user.userId === post.userId;
