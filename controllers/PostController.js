@@ -74,7 +74,9 @@ const AddUserReactionsAndReposts = async (req, res) => {
 			});
 			return {
 				...post,
-				reactionId: userReactionToPost[0]?.reactionId
+				reactionId: userReactionToPost[0]
+					? userReactionToPost[0].reactionId
+					: null
 			};
 		});
 		const postReposts = await Post.findAll({
@@ -196,7 +198,9 @@ const RecursivelyAddUserReactionsAndReposts = async (req, res) => {
 			});
 			const postAndUserReactions = {
 				...post,
-				reactionId: userReactionToPost[0]?.reactionId
+				reactionId: userReactionToPost[0]
+					? userReactionToPost[0].reactionId
+					: null
 			};
 			const repostsOfPost = postReposts.filter((postRepost) => {
 				return postAndUserReactions.id === postRepost.id;
@@ -296,7 +300,7 @@ const DeleteReaction = async (req, res) => {
 	try {
 		const postId = parseInt(req.params.postId);
 		const { userId } = req.body;
-		const reaction = await PostReaction.destory({
+		const reaction = await PostReaction.destroy({
 			where: { postId, userId }
 		});
 		return res.status(200).send({
