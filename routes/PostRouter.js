@@ -22,6 +22,11 @@ Router.get(
 	controller.GetPostDetailsById,
 	controller.RecursivelyAddUserReactionsAndReposts
 );
+Router.get(
+	'/:postId',
+	controller.GetPostById,
+	controller.AddUserReactionsAndReposts
+);
 Router.post(
 	'/',
 	middleware.stripToken,
@@ -47,7 +52,7 @@ Router.post(
 	controller.PostAReaction
 );
 Router.delete(
-	'/reaction/:postId/user/:userId',
+	'/:postId/reaction/:reactionId/user/:userId',
 	middleware.stripToken,
 	middleware.verifyToken,
 	controller.DeleteReaction

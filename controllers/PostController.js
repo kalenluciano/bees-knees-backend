@@ -1,3 +1,4 @@
+const { where } = require('sequelize');
 const {
 	Follow,
 	Post,
@@ -55,6 +56,16 @@ const GetUserFollowingPosts = async (req, res, next) => {
 		res.locals.userId = userId;
 		res.locals.posts = userFollowingPosts;
 		next();
+	} catch (error) {
+		throw error;
+	}
+};
+
+const GetPostById = async (req, res, next) => {
+	try {
+		const postId = parseInt(req.params.postId);
+		const post = await Post.findByPk(postId);
+		res.send(post);
 	} catch (error) {
 		throw error;
 	}
@@ -253,7 +264,20 @@ const PostAReaction = async (req, res) => {
 	try {
 		const postId = parseInt(req.params.postId);
 		const reaction = await PostReaction.create({ ...req.body, postId });
-		res.send(reaction);
+		const post = await Post.findByPk(postId);
+		if (req.body.reactionId === 0) {
+			const postUpdated = await Post.update(
+				{ flagCount: post.flagCount + 1 },
+				{ where: { id: postId } }
+			);
+			res.send({ reaction, postUpdated });
+		} else {
+			const postUpdated = await Post.update(
+				{ likesCount: post.likesCount + 1 },
+				{ where: { id: postId } }
+			);
+			res.send({ reaction, postUpdated });
+		}
 	} catch (error) {
 		throw error;
 	}
@@ -300,9 +324,22 @@ const DeleteReaction = async (req, res) => {
 	try {
 		const postId = parseInt(req.params.postId);
 		const userId = parseInt(req.params.userId);
+		const reactionId = parseInt(req.params.reactionId);
+		const post = await Post.findByPk(postId);
 		const reaction = await PostReaction.destroy({
 			where: { postId, userId }
 		});
+		if (reactionId === 0) {
+			await Post.update(
+				{ flagCount: post.flagCount - 1 },
+				{ where: { id: postId } }
+			);
+		} else {
+			await Post.update(
+				{ likesCount: post.likesCount - 1 },
+				{ where: { id: postId } }
+			);
+		}
 		return res.status(200).send({
 			msg: `User with id ${reaction.userId} removed reaction to post with id ${reaction.postId}.`,
 			payload: reaction
@@ -317,6 +354,7 @@ module.exports = {
 	GetPostsByUserId,
 	GetUserFollowingPosts,
 	GetPostDetailsById,
+	GetPostById,
 	AddUserReactionsAndReposts,
 	RecursivelyAddUserReactionsAndReposts,
 	PostAReaction,
