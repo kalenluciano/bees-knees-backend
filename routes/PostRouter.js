@@ -54,6 +54,12 @@ Router.put(
 	controller.UpdatePostById
 );
 Router.delete(
+	'/post/:postId',
+	middleware.stripToken,
+	middleware.verifyToken,
+	controller.DeletePost
+);
+Router.delete(
 	'/:postId/reaction/:reactionId/user/:userId',
 	middleware.stripToken,
 	middleware.verifyToken,

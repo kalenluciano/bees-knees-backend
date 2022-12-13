@@ -65,6 +65,8 @@ const GetPostById = async (req, res, next) => {
 	try {
 		const userId = parseInt(req.params.userId);
 		const postId = parseInt(req.params.postId);
+		console.log(postId);
+		console.log(userId);
 		const post = await Post.findByPk(postId);
 		const postReactions = await PostReaction.findOne({
 			where: { userId, postId },
@@ -196,16 +198,19 @@ const GetPostDetailsById = async (req, res, next) => {
 				};
 			}
 		};
-		const posts = {
-			...postDetails.dataValues,
-			comments: await Promise.all(
-				postDetails.comments.map(
-					async (comment) => await getAllComments(comment)
+		res.locals.posts = postDetails;
+		if (postDetails) {
+			const posts = {
+				...postDetails.dataValues,
+				comments: await Promise.all(
+					postDetails.comments.map(
+						async (comment) => await getAllComments(comment)
+					)
 				)
-			)
-		};
+			};
+			res.locals.posts = posts;
+		}
 		res.locals.userId = userId;
-		res.locals.posts = posts;
 		next();
 	} catch (error) {
 		throw error;
@@ -287,7 +292,7 @@ const RecursivelyAddUserReactionsAndReposts = async (req, res) => {
 			)
 		);
 	} catch (error) {
-		throw error;
+		return res.status(500).json({ error: error.message });
 	}
 };
 
@@ -378,6 +383,54 @@ const UpdatePostById = async (req, res) => {
 	}
 };
 
+const DeletePost = async (req, res) => {
+	try {
+		const postId = parseInt(req.params.postId);
+		const parentPostOfComment = await PostComment.findOne({
+			where: { commentId: postId }
+		});
+		let postToDecrementComment;
+		if (parentPostOfComment) {
+			postToDecrementComment = await Post.findByPk(
+				parentPostOfComment.postId
+			);
+			if (postToDecrementComment) {
+				console.log(postToDecrementComment);
+				const decrementCommentsCount = await Post.update(
+					{
+						commentsCount: postToDecrementComment.commentsCount - 1
+					},
+					{ where: { id: postToDecrementComment.id } }
+				);
+			}
+		}
+		const parentPostOfRepost = await PostRepost.findOne({
+			where: { repostId: postId }
+		});
+		let postToDecrementRepost;
+		if (parentPostOfRepost) {
+			postToDecrementRepost = await Post.findByPk(
+				parentPostOfRepost.postId
+			);
+			if (postToDecrementRepost) {
+				const decrementRepostCount = await Post.update(
+					{
+						repostCount: postToDecrementRepost.repostCount - 1
+					},
+					{ where: { id: postToDecrementRepost.id } }
+				);
+			}
+		}
+		await Post.destroy({ where: { id: postId } });
+		await PostReaction.destroy({ where: { postId: postId } });
+		await PostComment.destroy({ where: { commentId: postId } });
+		await PostRepost.destroy({ where: { repostId: postId } });
+		res.status(200).send({ postToDecrementComment, postToDecrementRepost });
+	} catch (error) {
+		throw error;
+	}
+};
+
 const DeleteReaction = async (req, res) => {
 	try {
 		const postId = parseInt(req.params.postId);
@@ -420,5 +473,6 @@ module.exports = {
 	PostARepost,
 	PostAPost,
 	UpdatePostById,
+	DeletePost,
 	DeleteReaction
 };
