@@ -203,15 +203,20 @@ const RecursivelyAddUserReactionsAndReposts = async (req, res) => {
 				}
 			]
 		});
+		const allUsers = await User.findAll({});
 		const addUserReactionsAndRepostToPosts = (post) => {
 			const userReactionToPost = postReactions.filter((postReaction) => {
 				return post.id === postReaction.postId;
+			});
+			const user = allUsers.filter((user) => {
+				return user.id === post.userId;
 			});
 			const postAndUserReactions = {
 				...post,
 				reactionId: userReactionToPost[0]
 					? userReactionToPost[0].reactionId
-					: null
+					: null,
+				username: user[0].username
 			};
 			const repostsOfPost = postReposts.filter((postRepost) => {
 				return postAndUserReactions.id === postRepost.id;
