@@ -7,7 +7,6 @@ const {
 	PostRepost,
 	User
 } = require('../models');
-const { post } = require('../routes/UserRouter');
 
 const GetAllPosts = async (req, res, next) => {
 	try {
@@ -366,6 +365,19 @@ const PostAPost = async (req, res) => {
 	}
 };
 
+const UpdatePostById = async (req, res) => {
+	try {
+		const postId = parseInt(req.params.postId);
+		const post = await Post.update(req.body, {
+			where: { id: postId },
+			returning: true
+		});
+		res.send(post);
+	} catch (error) {
+		throw error;
+	}
+};
+
 const DeleteReaction = async (req, res) => {
 	try {
 		const postId = parseInt(req.params.postId);
@@ -407,5 +419,6 @@ module.exports = {
 	PostAComment,
 	PostARepost,
 	PostAPost,
+	UpdatePostById,
 	DeleteReaction
 };

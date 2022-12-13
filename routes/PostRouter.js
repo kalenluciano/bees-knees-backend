@@ -47,6 +47,12 @@ Router.post(
 	middleware.verifyToken,
 	controller.PostAReaction
 );
+Router.put(
+	'/:postId',
+	middleware.stripToken,
+	middleware.verifyToken,
+	controller.UpdatePostById
+);
 Router.delete(
 	'/:postId/reaction/:reactionId/user/:userId',
 	middleware.stripToken,
