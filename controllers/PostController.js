@@ -149,7 +149,11 @@ const AddUserReactionsAndReposts = async (req, res) => {
 				});
 				return { ...post, username: user[0].username };
 			});
-		res.send(postsUserDetailsAndUserReactionsAndReposts);
+		const sortedPostsUserDetailsAndUserReactionsAndReposts =
+			postsUserDetailsAndUserReactionsAndReposts.sort((postA, postB) => {
+				return postB.updatedAt - postA.updatedAt;
+			});
+		res.send(sortedPostsUserDetailsAndUserReactionsAndReposts);
 	} catch (error) {
 		throw error;
 	}
