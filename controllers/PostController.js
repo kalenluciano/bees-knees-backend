@@ -7,6 +7,7 @@ const {
 	PostRepost,
 	User
 } = require('../models');
+const { post } = require('../routes/UserRouter');
 
 const GetAllPosts = async (req, res, next) => {
 	try {
@@ -63,9 +64,31 @@ const GetUserFollowingPosts = async (req, res, next) => {
 
 const GetPostById = async (req, res, next) => {
 	try {
+		const userId = parseInt(req.params.userId);
 		const postId = parseInt(req.params.postId);
 		const post = await Post.findByPk(postId);
-		res.send(post);
+		const postReactions = await PostReaction.findOne({
+			where: { userId, postId },
+			raw: true
+		});
+		const postReposts = await Post.findAll({
+			where: { postId, userId },
+			include: [
+				{
+					model: Post,
+					as: 'reposts',
+					through: { attributes: [] }
+				}
+			]
+		});
+		const user = await User.findByPk(post.userId);
+		const postToSend = {
+			...post,
+			reactionId: postReactions ? postReactions.reactionId : null,
+			userReposted: postReposts.length >= 0 ? true : false,
+			username: user.username
+		};
+		res.send(postToSend);
 	} catch (error) {
 		throw error;
 	}
@@ -296,7 +319,14 @@ const PostAComment = async (req, res) => {
 			postId,
 			commentId: comment.id
 		});
-		res.send({ comment, commentRelationship });
+		const commentIncrement = await Post.findByPk(postId);
+		const incrementCommentCount = await Post.update(
+			{
+				commentsCount: commentIncrement.commentsCount + 1
+			},
+			{ where: { id: postId } }
+		);
+		res.send({ comment, commentRelationship, incrementCommentCount });
 	} catch (error) {
 		throw error;
 	}
@@ -310,7 +340,14 @@ const PostARepost = async (req, res) => {
 			postId,
 			repostId: repost.id
 		});
-		res.send({ repost, repostRelationship });
+		const postReposting = await Post.findByPk(postId);
+		const incrementRepostCount = await Post.update(
+			{
+				repostCount: postReposting.repostCount + 1
+			},
+			{ where: { id: postId } }
+		);
+		res.send({ repost, repostRelationship, incrementRepostCount });
 	} catch (error) {
 		throw error;
 	}

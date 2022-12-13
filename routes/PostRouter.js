@@ -22,11 +22,7 @@ Router.get(
 	controller.GetPostDetailsById,
 	controller.RecursivelyAddUserReactionsAndReposts
 );
-Router.get(
-	'/:postId',
-	controller.GetPostById,
-	controller.AddUserReactionsAndReposts
-);
+Router.get('/:postId/user/:userId', controller.GetPostById);
 Router.post(
 	'/',
 	middleware.stripToken,
