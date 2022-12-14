@@ -225,45 +225,6 @@ const DeleteUserById = async (req, res) => {
 				await handleParentPostOfCommentAndRepost(postsByUserId.id);
 			})
 		);
-
-		// postsByUserId.forEach(async (post) => {
-		// const parentPostOfComment = await PostComment.findOne({
-		// 	where: { commentId: post.id }
-		// });
-		// let postToDecrementComment;
-		// if (parentPostOfComment) {
-		// 	postToDecrementComment = await Post.findByPk(
-		// 		parentPostOfComment.postId
-		// 	);
-		// 	if (postToDecrementComment) {
-		// 		const decrementCommentsCount = await Post.update(
-		// 			{
-		// 				commentsCount:
-		// 					postToDecrementComment.commentsCount - 1
-		// 			},
-		// 			{ where: { id: postToDecrementComment.id } }
-		// 		);
-		// 	}
-		// }
-		// const parentPostOfRepost = await PostRepost.findOne({
-		// 	where: { repostId: post.id }
-		// });
-		// let postToDecrementRepost;
-		// if (parentPostOfRepost) {
-		// 	postToDecrementRepost = await Post.findByPk(
-		// 		parentPostOfRepost.postId
-		// 	);
-		// 	if (postToDecrementRepost) {
-		// 		const decrementRepostCount = await Post.update(
-		// 			{
-		// 				repostCount: postToDecrementRepost.repostCount - 1
-		// 			},
-		// 			{ where: { id: postToDecrementRepost.id } }
-		// 		);
-		// 	}
-		// }
-		// await post.destroy();
-		// });
 		await User.destroy({
 			where: { id: userId }
 		});
