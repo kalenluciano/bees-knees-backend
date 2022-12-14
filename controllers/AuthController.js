@@ -25,7 +25,7 @@ const Login = async (req, res) => {
 		}
 		res.status(401).send({ status: 'Error', msg: 'Unauthorized' });
 	} catch (error) {
-		throw error;
+		return res.status(500).json({ error: error.message });
 	}
 };
 
@@ -56,7 +56,7 @@ const Register = async (req, res) => {
 		});
 		res.send(user);
 	} catch (error) {
-		throw error;
+		return res.status(500).json({ error: error.message });
 	}
 };
 
@@ -65,7 +65,7 @@ const CheckSession = async (req, res) => {
 		const { payload } = res.locals;
 		res.send(payload);
 	} catch (error) {
-		throw error;
+		return res.status(500).json({ error: error.message });
 	}
 };
 
