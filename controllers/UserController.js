@@ -1,4 +1,11 @@
-const { User, Follow, PostReaction, Post, PostComment } = require('../models');
+const {
+	User,
+	Follow,
+	PostReaction,
+	Post,
+	PostComment,
+	PostRepost
+} = require('../models');
 
 const GetAllUsers = async (req, res) => {
 	try {
