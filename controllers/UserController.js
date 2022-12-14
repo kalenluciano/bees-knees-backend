@@ -1,4 +1,4 @@
-const { User, Follow } = require('../models');
+const { User, Follow, PostReaction, Post, PostComment } = require('../models');
 
 const GetAllUsers = async (req, res) => {
 	try {
@@ -138,6 +138,132 @@ const DeleteUserById = async (req, res) => {
 	try {
 		const userId = parseInt(req.params.id);
 		const user = await User.findByPk(userId);
+		const followedUsers = await Follow.findAll({
+			where: { followerId: userId }
+		});
+		const getfollowedUserData = async (userId) => {
+			const user = await User.findByPk(userId);
+			return user;
+		};
+		const followedUsersData = await Promise.all(
+			followedUsers.map(async (followedUser) => {
+				return {
+					user: await getfollowedUserData(followedUser.userId)
+				};
+			})
+		);
+		await Promise.all(
+			followedUsersData.map(
+				async (followedUser) =>
+					await followedUser.user.decrement('followerCount')
+			)
+		);
+		const userReactions = await PostReaction.findAll({
+			where: { userId },
+			raw: true
+		});
+		const getUserReactedPosts = async (postId) => {
+			const post = await Post.findByPk(postId);
+			return post;
+		};
+		const userReactedPosts = await Promise.all(
+			await userReactions.map(async (userReaction) => {
+				return { post: await getUserReactedPosts(userReaction.postId) };
+			})
+		);
+		await Promise.all(
+			await userReactedPosts.map(async (userReactedPost) => {
+				if (userReactedPost.reactionId === 0) {
+					await userReactedPost.post.decrement('flagCount');
+				} else {
+					await userReactedPost.post.decrement('likesCount');
+				}
+			})
+		);
+		const postsByUserId = await Post.findAll({
+			where: { userId },
+			raw: true
+		});
+		const handleParentPostOfCommentAndRepost = async (postId) => {
+			const parentPostOfComment = await PostComment.findOne({
+				where: { commentId: postId }
+			});
+			if (parentPostOfComment) {
+				const postToDecrementComment = await Post.findByPk(
+					parentPostOfComment.postId
+				);
+				if (postToDecrementComment) {
+					await Post.update(
+						{
+							commentsCount:
+								postToDecrementComment.commentsCount - 1
+						},
+						{ where: { id: postToDecrementComment.id } }
+					);
+				}
+			}
+			const parentPostOfRepost = await PostRepost.findOne({
+				where: { repostId: postId }
+			});
+			if (parentPostOfRepost) {
+				const postToDecrementRepost = await Post.findByPk(
+					parentPostOfRepost.postId
+				);
+				if (postToDecrementRepost) {
+					await Post.update(
+						{
+							repostCount: postToDecrementRepost.repostCount - 1
+						},
+						{ where: { id: postToDecrementRepost.id } }
+					);
+				}
+			}
+			await Post.destroy({ where: { id: postId } });
+		};
+		await Promise.all(
+			postsByUserId.map(async (postsByUserId) => {
+				await handleParentPostOfCommentAndRepost(postsByUserId.id);
+			})
+		);
+
+		// postsByUserId.forEach(async (post) => {
+		// const parentPostOfComment = await PostComment.findOne({
+		// 	where: { commentId: post.id }
+		// });
+		// let postToDecrementComment;
+		// if (parentPostOfComment) {
+		// 	postToDecrementComment = await Post.findByPk(
+		// 		parentPostOfComment.postId
+		// 	);
+		// 	if (postToDecrementComment) {
+		// 		const decrementCommentsCount = await Post.update(
+		// 			{
+		// 				commentsCount:
+		// 					postToDecrementComment.commentsCount - 1
+		// 			},
+		// 			{ where: { id: postToDecrementComment.id } }
+		// 		);
+		// 	}
+		// }
+		// const parentPostOfRepost = await PostRepost.findOne({
+		// 	where: { repostId: post.id }
+		// });
+		// let postToDecrementRepost;
+		// if (parentPostOfRepost) {
+		// 	postToDecrementRepost = await Post.findByPk(
+		// 		parentPostOfRepost.postId
+		// 	);
+		// 	if (postToDecrementRepost) {
+		// 		const decrementRepostCount = await Post.update(
+		// 			{
+		// 				repostCount: postToDecrementRepost.repostCount - 1
+		// 			},
+		// 			{ where: { id: postToDecrementRepost.id } }
+		// 		);
+		// 	}
+		// }
+		// await post.destroy();
+		// });
 		await User.destroy({
 			where: { id: userId }
 		});

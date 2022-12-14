@@ -394,7 +394,6 @@ const DeletePost = async (req, res) => {
 				parentPostOfComment.postId
 			);
 			if (postToDecrementComment) {
-				console.log(postToDecrementComment);
 				const decrementCommentsCount = await Post.update(
 					{
 						commentsCount: postToDecrementComment.commentsCount - 1
