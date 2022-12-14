@@ -1,4 +1,3 @@
-const { where } = require('sequelize');
 const {
 	Follow,
 	Post,
@@ -18,7 +17,7 @@ const GetAllPosts = async (req, res, next) => {
 		res.locals.posts = allPosts;
 		next();
 	} catch (error) {
-		throw error;
+		return res.status(500).json({ error: error.message });
 	}
 };
 
@@ -33,7 +32,7 @@ const GetPostsByUserId = async (req, res, next) => {
 		res.locals.posts = postsByUserId;
 		next();
 	} catch (error) {
-		throw error;
+		return res.status(500).json({ error: error.message });
 	}
 };
 
@@ -57,7 +56,7 @@ const GetUserFollowingPosts = async (req, res, next) => {
 		res.locals.posts = userFollowingPosts;
 		next();
 	} catch (error) {
-		throw error;
+		return res.status(500).json({ error: error.message });
 	}
 };
 
@@ -91,7 +90,7 @@ const GetPostById = async (req, res, next) => {
 		};
 		res.send(postToSend);
 	} catch (error) {
-		throw error;
+		return res.status(500).json({ error: error.message });
 	}
 };
 
@@ -156,7 +155,7 @@ const AddUserReactionsAndReposts = async (req, res) => {
 			});
 		res.send(sortedPostsUserDetailsAndUserReactionsAndReposts);
 	} catch (error) {
-		throw error;
+		return res.status(500).json({ error: error.message });
 	}
 };
 
@@ -213,7 +212,7 @@ const GetPostDetailsById = async (req, res, next) => {
 		res.locals.userId = userId;
 		next();
 	} catch (error) {
-		throw error;
+		return res.status(500).json({ error: error.message });
 	}
 };
 
@@ -315,7 +314,7 @@ const PostAReaction = async (req, res) => {
 			res.send({ reaction, postUpdated });
 		}
 	} catch (error) {
-		throw error;
+		return res.status(500).json({ error: error.message });
 	}
 };
 
@@ -336,7 +335,7 @@ const PostAComment = async (req, res) => {
 		);
 		res.send({ comment, commentRelationship, incrementCommentCount });
 	} catch (error) {
-		throw error;
+		return res.status(500).json({ error: error.message });
 	}
 };
 
@@ -357,7 +356,7 @@ const PostARepost = async (req, res) => {
 		);
 		res.send({ repost, repostRelationship, incrementRepostCount });
 	} catch (error) {
-		throw error;
+		return res.status(500).json({ error: error.message });
 	}
 };
 
@@ -366,7 +365,7 @@ const PostAPost = async (req, res) => {
 		const post = await Post.create(req.body);
 		res.send(post);
 	} catch (error) {
-		throw error;
+		return res.status(500).json({ error: error.message });
 	}
 };
 
@@ -379,7 +378,7 @@ const UpdatePostById = async (req, res) => {
 		});
 		res.send(post);
 	} catch (error) {
-		throw error;
+		return res.status(500).json({ error: error.message });
 	}
 };
 
@@ -427,7 +426,7 @@ const DeletePost = async (req, res) => {
 		await PostRepost.destroy({ where: { repostId: postId } });
 		res.status(200).send({ postToDecrementComment, postToDecrementRepost });
 	} catch (error) {
-		throw error;
+		return res.status(500).json({ error: error.message });
 	}
 };
 
@@ -456,7 +455,7 @@ const DeleteReaction = async (req, res) => {
 			payload: reaction
 		});
 	} catch (error) {
-		throw error;
+		return res.status(500).json({ error: error.message });
 	}
 };
 

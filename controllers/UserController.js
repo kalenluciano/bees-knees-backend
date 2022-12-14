@@ -5,7 +5,7 @@ const GetAllUsers = async (req, res) => {
 		const allUsers = await User.findAll({});
 		res.send(allUsers);
 	} catch (error) {
-		throw error;
+		return res.status(500).json({ error: error.message });
 	}
 };
 
@@ -15,7 +15,7 @@ const GetUserDetailsById = async (req, res) => {
 		const user = await User.findByPk(userId);
 		res.send(user);
 	} catch (error) {
-		throw error;
+		return res.status(500).json({ error: error.message });
 	}
 };
 
@@ -28,7 +28,7 @@ const CheckFollowStatus = async (req, res) => {
 		});
 		res.send(followStatus);
 	} catch (error) {
-		throw error;
+		return res.status(500).json({ error: error.message });
 	}
 };
 
@@ -57,7 +57,7 @@ const ChangeFollowingCount = async (req, res, next) => {
 		}
 		next();
 	} catch (error) {
-		throw error;
+		return res.status(500).json({ error: error.message });
 	}
 };
 
@@ -86,7 +86,7 @@ const ChangeFollowerCount = async (req, res, next) => {
 		}
 		next();
 	} catch (error) {
-		throw error;
+		return res.status(500).json({ error: error.message });
 	}
 };
 
@@ -113,7 +113,7 @@ const ChangeFollowUserStatus = async (req, res) => {
 			});
 		}
 	} catch (error) {
-		throw error;
+		return res.status(500).json({ error: error.message });
 	}
 };
 
@@ -130,7 +130,7 @@ const UpdateUserById = async (req, res) => {
 			payload: user
 		});
 	} catch (error) {
-		throw error;
+		return res.status(500).json({ error: error.message });
 	}
 };
 
@@ -146,7 +146,7 @@ const DeleteUserById = async (req, res) => {
 			payload: user
 		});
 	} catch (error) {
-		throw error;
+		return res.status(500).json({ error: error.message });
 	}
 };
 
