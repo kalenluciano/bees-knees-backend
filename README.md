@@ -43,20 +43,7 @@ A Trello board was used to keep track of development progress and can be viewed 
 
 ---
 
-### **_Screenshots_**
-
-#### Image 1 Header
-
-![Image]()
-
----
-
 ### **_Future Updates_**
 
--   [ ] TBD
-
----
-
-### **_Credits_**
-
-TBD
+-   [ ] Add a relation to track posts viewed by user and filter/sort posts to send to a user based on viewed content
+-   [ ] Add in verified users and give more weight to reactions by verified users on posts about a specific topic
