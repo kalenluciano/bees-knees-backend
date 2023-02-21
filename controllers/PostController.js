@@ -15,7 +15,7 @@ const GetAllPosts = async (req, res, next) => {
 		});
 		res.locals.userId = userId;
 		res.locals.posts = allPosts;
-		next();
+		next(); // Next in the route is AddUserReactionsAndReposts
 	} catch (error) {
 		return res.status(500).json({ error: error.message });
 	}
@@ -30,7 +30,7 @@ const GetPostsByUserId = async (req, res, next) => {
 		});
 		res.locals.userId = userId;
 		res.locals.posts = postsByUserId;
-		next();
+		next(); // Next in the route is AddUserReactionsAndReposts
 	} catch (error) {
 		return res.status(500).json({ error: error.message });
 	}
@@ -54,7 +54,7 @@ const GetUserFollowingPosts = async (req, res, next) => {
 		});
 		res.locals.userId = userId;
 		res.locals.posts = userFollowingPosts;
-		next();
+		next(); // Next in the route is AddUserReactionsAndReposts
 	} catch (error) {
 		return res.status(500).json({ error: error.message });
 	}
@@ -64,8 +64,6 @@ const GetPostById = async (req, res, next) => {
 	try {
 		const userId = parseInt(req.params.userId);
 		const postId = parseInt(req.params.postId);
-		console.log(postId);
-		console.log(userId);
 		const post = await Post.findByPk(postId);
 		const postReactions = await PostReaction.findOne({
 			where: { userId, postId },
@@ -210,7 +208,7 @@ const GetPostDetailsById = async (req, res, next) => {
 			res.locals.posts = posts;
 		}
 		res.locals.userId = userId;
-		next();
+		next(); // Next in the route is RecursivelyAddUserReactionsAndReposts
 	} catch (error) {
 		return res.status(500).json({ error: error.message });
 	}
