@@ -6,13 +6,19 @@
 
 #### [BeeKnees Frontend](https://github.com/kalenluciano/bees-knees-frontend)
 
-#### [Deployed Site]()
+#### [Deployed Site](http://bees-knees-frontend.herokuapp.com)
 
 ---
 
 ### **_Description_**
 
-This app allows users to post content, follow other users, and interact with other users' posts. Join the hive.
+This app allows users to post content, follow other users, and interact with other users' posts through likes, dislikes, comments, and reposts.
+
+The news feed, called The Buzz, displays the most recent posts from a user's followers. The explore page, called Pollination Station, renders the most recent posts from all users. A user can click on a profile and follow other users.
+
+When a user clicks on a post, the page recursively renders all of the post's comments and their related comment threads. The counts for followers, following, reactions, comments, and reposts all update based on a user's interaction with portfolios and posts.
+
+Join the hive!
 
 ---
 
